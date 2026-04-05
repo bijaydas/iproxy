@@ -13,3 +13,7 @@ class SignUpRequest(BaseModel):
         if password != confirm_password:
             raise ValueError("Passwords do not match")
         return values
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str

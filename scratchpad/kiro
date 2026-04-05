@@ -1,0 +1,44 @@
+# TAPI Template Analysis
+
+## Good
+
+- Clean folder structure: api / services / schemas / models / core / exceptions — easy to navigate
+- Pydantic settings via `pydantic-settings` with `.env` support — solid config approach
+- Argon2 for password hashing — correct choice, better than bcrypt
+- Centralized exception handling with `BaseAppException` — good pattern
+- Consistent API response shape (`ApiSuccessResponse` / `ApiErrorResponse`)
+- Logging middleware with password scrubbing — thoughtful
+- Alembic set up and ready to go
+- `uv` for dependency management — modern and fast
+- `ruff` for linting — good choice
+- API versioning baked in (`/api/v1/`)
+
+
+## Bad
+
+- `verify_password` in `PasswordService` is broken — it only takes `hashed_password` but argon2's `verify()` needs both the hash AND the plain password. Will always fail.
+- `auth.py` router catches all exceptions and returns `ApiErrorResponse` as a 200 OK — errors should raise HTTP exceptions, not return 200s with error bodies.
+- `UserService` creates its own `SessionLocal()` directly instead of using FastAPI's `Depends(get_db)` — bypasses the dependency injection system and makes testing harder.
+- `print(exc.errors())` left in the validation exception handler in `main.py` — debug leftover.
+- `JWT_ACCESS_TOKEN_EXPIRE_MINUTES = (60 * 60) * 1` — the name says "minutes" but the value is 3600, which would mean 3600 minutes (2.5 days). Misleading.
+- No JWT implementation despite JWT settings being present — the config is there but nothing uses it.
+- `MAX_ACTIVE_SESSIONS_PER_USER = 9999999` — placeholder magic number with no implementation behind it.
+- `DEBUG = True` as default in settings — should default to `False`.
+- `echo=True` on the SQLAlchemy engine — logs every SQL query, fine for dev but should be tied to `DEBUG` setting.
+- `ApiSuccessDataResponse` in `common.py` is unused dead code.
+- `app/utils/` and `app/enums/` are empty placeholder dirs — fine for a template but worth noting.
+- `logs/` directory with actual log files committed — should be gitignored (it is in `.gitignore` but the files exist, meaning they were committed before the rule was added).
+
+
+## Should Be Improved
+
+- Add a `login` endpoint — a signup-only auth template isn't very useful as a starting point.
+- Add JWT token generation/validation utilities since the config already expects them.
+- `SessionLocal` used as a context manager in `UserService` but `sessionmaker` doesn't return a context manager by default — works only because SQLAlchemy 2.x added it, but worth making explicit with `with Session(engine) as session` or sticking to `Depends(get_db)`.
+- `remove_sensitive_info` in the logger only handles `password` and `confirm_password` — hardcoded field names. A set-based approach would be cleaner and easier to extend.
+- No `.env.example` entries for `APP_NAME`, `DEBUG`, `CORS_ORIGINS` etc. — only `JWT_SECRET_KEY` and `DATABASE_URL` are shown. New users won't know what else they can configure.
+- `CORS_ORIGINS: list[str] = ["*"]` — wildcard default is fine for a template but should have a comment warning it needs to be locked down in production.
+- No `tests/` content at all — even a single smoke test (app starts, health check returns 200) would make the template more useful.
+- Consider adding a `/health` endpoint — standard practice, useful for infra/deployment.
+- `pyproject.toml` description is still "Add your description here" — minor but should be a placeholder reminder in the README.
+- `pydantic-settings` is not listed as an explicit dependency in `pyproject.toml` — it comes in transitively but should be explicit since the code directly imports from it.

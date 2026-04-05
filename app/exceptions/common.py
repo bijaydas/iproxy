@@ -2,12 +2,11 @@ from starlette import status
 
 
 class BaseAppException(Exception):
-    def __init__(self, message: str, status_code: int = status.HTTP_400_BAD_REQUEST) -> None:
-        self.message = message
+    def __init__(self, error: str, status_code: int = status.HTTP_400_BAD_REQUEST) -> None:
+        self.error = error
         self.status_code = status_code
-        super().__init__(message)
+        super().__init__(error)
 
-
-class GeneralAppException(BaseAppException):
-    def __init__(self, message: str = "An error occurred"):
-        super().__init__(message, status_code=status.HTTP_400_BAD_REQUEST)
+class FallbackException(BaseAppException):
+    def __init__(self, error: str = "Fallback", status_code: int = status.HTTP_400_BAD_REQUEST) -> None:
+        super().__init__(error, status_code)

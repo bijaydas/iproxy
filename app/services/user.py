@@ -5,6 +5,7 @@ from app.core.logger import logger
 from app.models.user import User
 from app.schemas.requests.auth import SignUpRequest
 from app.services.password import PasswordService
+from app.exceptions.auth import EmailAlreadyExists
 
 
 class UserService:
@@ -26,7 +27,7 @@ class UserService:
                 return user
         except IntegrityError as e:
             logger.error(e)
-            raise Exception("Email already exists")
+            raise EmailAlreadyExists()
         except Exception as e:
             logger.error(e)
             raise e

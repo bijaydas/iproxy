@@ -1,0 +1,93 @@
+# TAPI - FastAPI Template Analysis
+
+## What's Good
+
+- **Clean project structure** — clear separation: api/, core/, models/, schemas/, services/, exceptions/
+- **Versioned API routes** — `/api/v1/` prefix, easy to add v2 later
+- **Pydantic settings** — env-based config via `.env`, typed and validated
+- **Argon2 for password hashing** — correct choice, better than bcrypt
+- **Custom exception base class** — `BaseAppException` with status_code is the right pattern
+- **Request/response logging middleware** — logs everything with sensitive field masking (password → ****)
+- **Alembic migrations** — properly configured, reads DATABASE_URL from settings
+- **Separate request/response schemas** — good discipline to keep them separate
+- **uv as package manager** — modern, fast, lock file committed
+- **Ruff configured** — linting/formatting sorted
+
+---
+
+## Bugs
+
+**`PasswordService.verify_password()` is broken**
+```python
+# Current — missing plain_password arg, this will always fail
+def verify_password(self, hashed_password) -> bool:
+    self.ph.verify(hashed_password)
+
+# Should be
+def verify_password(self, plain_password: str, hashed_password: str) -> bool:
+    self.ph.verify(hashed_password, plain_password)
+```
+
+**Auth route catches all exceptions and returns 200**
+```python
+# Current — swallows errors, always returns 200
+except Exception as e:
+    return ApiErrorResponse(message=str(e))  # still HTTP 200!
+
+# Should raise and let the app-level handler deal with it
+raise BaseAppException(message=str(e), status_code=400)
+```
+The `BaseAppException` handler in `main.py` is wired up but never actually invoked because routes catch everything first.
+
+---
+
+## What's Missing / Should Be Improved
+
+**Auth**
+- No login endpoint — JWT is configured in settings but never generated
+- No token validation / protected route example
+- No logout / session invalidation (MAX_ACTIVE_SESSIONS_PER_USER is set to 9999999 but unused)
+
+**Validation**
+- `email` field is plain `str` — use `pydantic.EmailStr`
+- No password strength requirements (min length, etc.)
+
+**User model**
+- No `created_at` / `updated_at` timestamps
+- No soft delete (`deleted_at`)
+- Consider a base model mixin for timestamps shared across future models
+
+**Database**
+- `echo=True` in engine — fine for dev, should be `settings.DEBUG` controlled
+- Services create `SessionLocal()` directly instead of using FastAPI's `get_db` dependency — inconsistent
+
+**HTTP status codes**
+- Signup should return `201 Created`, not `200 OK`
+- Error responses need proper 4xx codes, not 200 with `success: false`
+
+**Tests**
+- `tests/` is empty — at minimum: unit test for PasswordService, integration test for /signup
+
+**Settings**
+- `JWT_SECRET_KEY=secret` in `.env` — `.env.example` should have a comment warning to change this
+- `DEBUG=True` is hardcoded default, should default to `False`
+- `CORS_ORIGINS=["*"]` — fine for a template, but worth a comment noting to restrict in production
+
+**`validate_passwords` model_validator**
+- Uses `mode="before"` which means it runs on raw dict — safer to use `mode="after"` so you're working with validated fields
+
+---
+
+## Minor Nits
+
+- `enums/` and `utils/` directories exist but are empty — either populate with examples or remove
+- `scratchpad/` shouldn't be in the repo (not in `.gitignore`)
+- `logs/` is gitignored but actual log files are present in the repo
+- Service classes (`UserService`, `PasswordService`) are instantiated per-request inside route handlers — use `Depends()` instead
+- `ApiSuccessDataResponse` in `common.py` uses `data: dict` — should be generic `data: T` using `Generic[T]`
+
+---
+
+## Summary
+
+Good bones. Structure, tooling, and most patterns are solid for a starter template. The main things to fix before using this as a base: the password verify bug, proper HTTP status codes, and wiring up the exception handlers correctly. Then add a login endpoint with JWT — otherwise the JWT config is dead weight.

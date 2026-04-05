@@ -1,0 +1,91 @@
+# TAPI — Action Items
+
+## Bugs
+
+1. **`verify_password()` is broken**
+   `PasswordService.verify_password()` only accepts `hashed_password` but argon2's `verify()` requires both the hash and the plain password. Will always fail at login.
+   Fix: add `plain_password: str` param and call `self.ph.verify(hashed_password, plain_password)`.
+
+2. **Auth route swallows exceptions and returns HTTP 200 on errors**
+   `auth.py` catches all exceptions and returns `ApiErrorResponse` with status 200. The app-level `BaseAppException` handler in `main.py` is wired up but never invoked. Errors should raise exceptions, not return 200s with error bodies.
+
+3. **`print(exc.errors())` debug leftover in `main.py`**
+   Left in the `RequestValidationError` handler. Should be removed or replaced with a logger call.
+
+4. **`JWT_ACCESS_TOKEN_EXPIRE_MINUTES` value is in seconds, not minutes**
+   Set to `(60 * 60) * 1 = 3600`. The name says "minutes" — this means the token expires in 2.5 days, not 1 hour. Either rename the setting or fix the value.
+
+---
+
+## Missing Features
+
+5. **No login endpoint**
+   Only signup is implemented. A template with auth config but no login is not useful as a starting point.
+
+6. **No JWT generation or validation**
+   JWT settings exist in `settings.py` but nothing generates or validates tokens. Add utilities for token creation and a `get_current_user` dependency for protected routes.
+
+7. **No `/health` endpoint**
+   Standard practice for any API. Useful for infra, load balancers, and deployment checks.
+
+8. **No tests**
+   `tests/` is empty. At minimum: unit test for `PasswordService`, integration test for the `/signup` endpoint, and a smoke test that the app starts and `/health` returns 200.
+
+---
+
+## Code Quality
+
+9. **`UserService` bypasses FastAPI dependency injection**
+   Creates `SessionLocal()` directly instead of using `Depends(get_db)`. Makes testing harder and inconsistent with the `get_db` dependency already defined in `database.py`.
+
+10. **`MAX_ACTIVE_SESSIONS_PER_USER = 9999999` — magic number with no implementation**
+    Setting exists but nothing uses it. Either implement session limiting or remove the setting.
+
+11. **`DEBUG = True` hardcoded as default**
+    Should default to `False`. Enabling debug mode by default is a bad habit to bake into a template.
+
+12. **`echo=True` on SQLAlchemy engine is hardcoded**
+    Should be `echo=settings.DEBUG` so SQL query logging is controlled by the debug flag.
+
+13. **`ApiSuccessDataResponse` is dead code**
+    Defined in `common.py` but never used anywhere. Remove or use it.
+
+14. **`remove_sensitive_info` uses hardcoded field names**
+    Only masks `password` and `confirm_password`. Should use a configurable set so new fields (e.g. `token`, `secret`) can be added without touching the logger code.
+
+15. **`ApiSuccessDataResponse.data` typed as `dict`**
+    Should use `Generic[T]` so consumers get proper type hints instead of a plain dict.
+
+16. **`validate_passwords` uses `mode="before"`**
+    Model validator runs on raw unvalidated input. Should use `mode="after"` to operate on already-validated field values.
+
+---
+
+## Improvements
+
+17. **Add email format validation**
+    `SignUpRequest.email` is plain `str`. Use `pydantic.EmailStr`.
+
+18. **Add password strength validation**
+    No minimum length or complexity rules enforced. Add a field validator.
+
+19. **Add timestamps to `User` model**
+    Missing `created_at` and `updated_at`. Create a base model mixin with these columns so all future models inherit them.
+
+20. **Add soft delete support**
+    Consider a `deleted_at` column (or a base mixin) rather than hard deletes.
+
+21. **`.env.example` is incomplete**
+    Only shows `JWT_SECRET_KEY` and `DATABASE_URL`. New users won't know about `DEBUG`, `APP_NAME`, `CORS_ORIGINS`, `ENABLE_CONSOLE_LOGGING`, etc. Document all configurable vars.
+
+22. **`CORS_ORIGINS = ["*"]` needs a warning comment**
+    Wildcard is fine for local dev but must be restricted in production. Add an inline comment.
+
+23. **`pydantic-settings` not listed as an explicit dependency**
+    It's imported directly in the code but only arrives transitively. Should be explicit in `pyproject.toml`.
+
+24. **`scratchpad/` not in `.gitignore`**
+    Should be added so scratch files don't get committed.
+
+25. **Empty `app/utils/` and `app/enums/` directories**
+    Either add example content (e.g. a common enum, a date util) or remove them. Empty dirs add noise.

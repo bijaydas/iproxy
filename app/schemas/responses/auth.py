@@ -7,5 +7,5 @@ class SignUpResponse(BaseModel):
     email: str
 
 class SignUpResponseData(ApiSuccessResponse):
-    message: str = "User created successfully"
+    message: str = "success"
     data: SignUpResponse
