@@ -1,6 +1,6 @@
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
-from app.core.database import SessionLocal
 from app.core.logger import logger
 from app.models.user import User
 from app.schemas.requests.auth import SignUpRequest
@@ -14,17 +14,16 @@ class UserService:
     def __init__(self):
         self.password_service = PasswordService()
 
-    def create(self, payload: SignUpRequest):
+    def create(self, payload: SignUpRequest, db: Session):
         try:
-            with SessionLocal() as session:
-                user = User(
-                    email=payload.email.lower(),
-                    password=self.password_service.hash(payload.password),
-                )
-                session.add(user)
-                session.commit()
-                session.refresh(user)
-                return user
+            user = User(
+                email=payload.email.lower(),
+                password=self.password_service.hash(payload.password),
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            return user
         except IntegrityError as e:
             logger.error(e)
             raise EmailAlreadyExists()

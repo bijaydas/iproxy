@@ -1,11 +1,9 @@
 from pydantic import BaseModel
 
-from app.schemas.responses.common import ApiSuccessResponse
-
 
 class SignUpResponse(BaseModel):
+    name: str | None
     email: str
 
-class SignUpResponseData(ApiSuccessResponse):
-    message: str = "success"
+class SignUpResponseData(BaseModel):
     data: SignUpResponse
