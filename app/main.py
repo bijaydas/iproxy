@@ -1,16 +1,16 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from contextlib import asynccontextmanager
-
 from starlette import status
 
 from app.api.v1 import auth
 from app.core.logger import LoggingMiddleware
 from app.core.settings import settings
-from app.exceptions.common import BaseAppException
 from app.core.startup import checks
+from app.exceptions.common import BaseAppException
 
 
 @asynccontextmanager

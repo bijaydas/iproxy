@@ -1,10 +1,16 @@
-from datetime import datetime
+from __future__ import annotations
 
-from sqlalchemy import String, Integer, DateTime
-from sqlalchemy.orm import mapped_column, Mapped
+from datetime import datetime
+from typing import TYPE_CHECKING
+
+from sqlalchemy import DateTime, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
 from app.enums import UserStatus
+
+if TYPE_CHECKING:
+    from app.models.session import Session
 
 
 class User(Base):
@@ -24,3 +30,5 @@ class User(Base):
 
     """This is soft delete"""
     is_deleted: Mapped[int] = mapped_column(Integer, default=0)
+
+    sessions: Mapped[list["Session"]] = relationship("Session", back_populates="user")

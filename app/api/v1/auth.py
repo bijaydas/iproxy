@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.logger import logger
-from app.schemas.requests.auth import SignUpRequest
-from app.schemas.responses.auth import SignUpResponse, SignUpResponseData
-from app.services.user import UserService
-from app.exceptions.auth import EmailAlreadyExists
-from app.exceptions.common import FallbackException
 from app.core.database import get_db
+from app.core.logger import logger
+from app.exceptions.auth import EmailAlreadyExists, InvalidPassword, InvalidUser
+from app.exceptions.common import FallbackException
+from app.schemas.requests.auth import LoginRequest, SignUpRequest
+from app.schemas.responses.auth import SignUpResponse, SignUpResponseData
+from app.schemas.responses.common import ApiSuccessDataResponse
+from app.services.user import UserService
 
 router = APIRouter()
 
@@ -29,4 +30,21 @@ async def signup(payload: SignUpRequest, db: Session = Depends(get_db)):
         raise e
     except Exception as e:
         logger.error(f"Error during user signup: {str(e)}")
+        raise FallbackException(str(e))
+
+@router.post("/login")
+async def login(payload: LoginRequest, db: Session = Depends(get_db)):
+    try:
+        response = UserService().login(payload, db)
+        return ApiSuccessDataResponse(
+            data=response,
+        )
+    except InvalidUser as e:
+        logger.error(f"Invalid user: {e}")
+        raise e
+    except InvalidPassword as e:
+        logger.error(f"Invalid password: {e}")
+        raise e
+    except Exception as e:
+        logger.error(f"Error during user login: {str(e)}")
         raise FallbackException(str(e))

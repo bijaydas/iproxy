@@ -1,5 +1,6 @@
-from app.services.setup import ApplicationSetup
 from app.core.database import engine
+from app.services.setup import ApplicationSetup
+
 
 def checks():
     application_setup = ApplicationSetup(engine)

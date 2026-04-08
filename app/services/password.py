@@ -9,9 +9,8 @@ class PasswordService:
     def hash(self, plain_password) -> str:
         return self.ph.hash(plain_password)
 
-    def verify_password(self, hashed_password) -> bool:
+    def verify_password(self, hashed_password: str, plain_password: str) -> bool:
         try:
-            self.ph.verify(hashed_password)
-            return True
+            return self.ph.verify(hashed_password, plain_password)
         except VerifyMismatchError:
             return False
