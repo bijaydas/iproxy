@@ -2,24 +2,8 @@
 
 A minimal FastAPI template for building modern APIs quickly.
 
-## Features
-
-- **FastAPI** - Fast, modern Python web framework
-- **SQLAlchemy** - SQL toolkit and ORM
-- **PostgreSQL** - Robust database backend
-- **Alembic** - Database migrations
-- **Argon2** - Secure password hashing
-- **CORS** - Cross-Origin Resource Sharing enabled
-- **Logging** - Built-in request logging middleware
-- **Error Handling** - Centralized exception handling
-
-
 ## Quick Start
 
-### Prerequisites
-
-- Python 3.12+
-- PostgreSQL
 
 ### Installation
 
