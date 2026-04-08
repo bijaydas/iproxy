@@ -6,3 +6,6 @@ class ApiSuccessResponse(BaseModel):
 
 class ApiSuccessDataResponse(BaseModel):
     data: dict
+
+class ApiErrorResponse(BaseModel):
+    error: str = "Please try again later."

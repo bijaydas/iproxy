@@ -64,3 +64,12 @@ class UserService:
         db.refresh(session_model)
 
         return output
+
+    @staticmethod
+    def get_profile(email: str, db: Session):
+        user = db.query(User).filter(User.email == email).first()
+
+        if not user:
+            raise InvalidUser()
+
+        return user

@@ -13,6 +13,7 @@ dependencies = [
     "fastapi[standard]>=0.135.0",
     "psycopg2-binary>=2.9.11",
     "pyjwt[crypto]>=2.12.1",
+    "pytest>=9.0.3",
 ]
 
 [dependency-groups]

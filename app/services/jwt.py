@@ -22,10 +22,8 @@ class JWTService:
 
         return jwt.encode(payload, self.secret, algorithm=settings.JWT_ALGORITHM)
 
-    def decode_token(self, token: str):
+    def verify(self, token: str):
         try:
             return jwt.decode(token, self.secret, algorithms=[settings.JWT_ALGORITHM])
-        except jwt.ExpiredSignatureError as e:
-            raise e
-        except jwt.InvalidTokenError as e:
+        except Exception as e:
             raise e
