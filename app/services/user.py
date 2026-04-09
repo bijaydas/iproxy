@@ -124,3 +124,22 @@ class UserService:
             raise InvalidUser()
 
         return True
+
+    def reset_password(self, user_id: str, old_password: str, new_password: str, db: Session):
+        user = db.query(User).filter(User.id == user_id).first()
+
+        if not user:
+            logger.error(f"User with id {user_id} does not exist")
+            raise InvalidUser()
+
+        """Check if existing password is correct"""
+        if not self.password_service.verify_password(str(user.password), old_password):
+            raise InvalidPassword()
+
+        """Update the password"""
+        user.password = self.password_service.hash(new_password)
+
+        db.commit()
+        db.refresh(user)
+
+        return True

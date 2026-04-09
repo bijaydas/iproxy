@@ -8,7 +8,7 @@ from app.deps.auth import get_current_user
 from app.exceptions.auth import EmailAlreadyExists, InvalidPassword, InvalidUser
 from app.exceptions.common import FallbackException
 from app.schemas.general import UserSession
-from app.schemas.requests.auth import LoginRequest, SignUpRequest
+from app.schemas.requests.auth import LoginRequest, ResetPasswordRequest, SignUpRequest
 from app.schemas.responses.auth import SignUpResponse, SignUpResponseData
 from app.schemas.responses.common import ApiSuccessDataResponse, ApiSuccessResponse
 from app.services import UserService
@@ -67,4 +67,26 @@ def logout(
         return ApiSuccessResponse()
     except Exception as e:
         logger.error(f"Error during user logout: {str(e)}")
+        raise FallbackException(str(e))
+
+@router.post("/reset-password")
+def reset_password(
+    payload: ResetPasswordRequest,
+    user_session: UserSession = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    try:
+        UserService().reset_password(
+            user_session.id,
+            payload.current_password,
+            payload.new_password,
+            db,
+        )
+        logger.info(f"Password reset: {user_session.id}")
+        return ApiSuccessResponse()
+    except InvalidPassword as e:
+        logger.error(f"Invalid password: {e}")
+        raise e
+    except Exception as e:
+        logger.error(f"Error during password reset: {str(e)}")
         raise FallbackException(str(e))
