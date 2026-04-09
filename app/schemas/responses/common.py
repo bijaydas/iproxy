@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class ApiSuccessResponse(BaseModel):
-    message: str
+    message: str = "ok"
 
 class ApiSuccessDataResponse(BaseModel):
     data: dict

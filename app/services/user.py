@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -9,6 +11,7 @@ from app.schemas.requests.auth import LoginRequest, SignUpRequest
 from app.services.jwt import JWTService
 from app.services.password import PasswordService
 from app.enums import UserStatus
+from app.utils.general import pprint
 
 
 class UserService:
@@ -78,3 +81,47 @@ class UserService:
     @staticmethod
     def is_active(user: User):
         return user.status == UserStatus.active.value
+
+    @staticmethod
+    def logout(user_id: str, token: str, db: Session):
+        user = db.query(User).filter(User.id == user_id).first()
+
+        if not user:
+            logger.error(f"User with id {user_id} does not exist")
+            raise InvalidUser()
+
+        current_session = db.query(SessionModel).filter(
+            SessionModel.user_id == user_id,
+            SessionModel.jwt_token == token,
+            SessionModel.logged_out_at.is_(None),
+        ).first()
+
+        if not current_session:
+            logger.error(f"User with id {user_id} does not exist")
+            raise InvalidUser()
+
+        current_session.logged_out_at = datetime.now()
+        db.commit()
+        db.refresh(current_session)
+
+        return True
+
+    @staticmethod
+    def is_logged_in(user_id: str, token: str, db: Session):
+        user = db.query(User).filter(User.id == user_id).first()
+
+        if not user:
+            logger.error(f"User with id {user_id} does not exist")
+            raise InvalidUser()
+
+        current_session = db.query(SessionModel).filter(
+            SessionModel.user_id == user_id,
+            SessionModel.jwt_token == token,
+            SessionModel.logged_out_at.is_(None),
+        ).first()
+
+        if not current_session:
+            logger.error(f"User with id {user_id} does not exist")
+            raise InvalidUser()
+
+        return True

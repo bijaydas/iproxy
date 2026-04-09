@@ -7,8 +7,12 @@ from app.exceptions.auth import EmailAlreadyExists, InvalidPassword, InvalidUser
 from app.exceptions.common import FallbackException
 from app.schemas.requests.auth import LoginRequest, SignUpRequest
 from app.schemas.responses.auth import SignUpResponse, SignUpResponseData
-from app.schemas.responses.common import ApiSuccessDataResponse
+from app.schemas.responses.common import ApiSuccessDataResponse, ApiSuccessResponse
 from app.services.user import UserService
+import app.constants.log_messages as log_messages
+from app.schemas.general import UserSession
+from app.deps.auth import get_current_user
+from app.services import UserService
 
 router = APIRouter()
 
@@ -47,4 +51,21 @@ async def login(payload: LoginRequest, db: Session = Depends(get_db)):
         raise e
     except Exception as e:
         logger.error(f"Error during user login: {str(e)}")
+        raise FallbackException(str(e))
+
+@router.post("/logout")
+def logout(
+    user_session: UserSession = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    try:
+        UserService().logout(
+            user_session.id,
+            user_session.token,
+            db
+        )
+        logger.info(log_messages.USER_LOGOUT.format(user_id=user_session.id))
+        return ApiSuccessResponse()
+    except Exception as e:
+        logger.error(f"Error during user logout: {str(e)}")
         raise FallbackException(str(e))

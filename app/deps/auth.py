@@ -18,15 +18,27 @@ def get_current_user(
     db: Session = Depends(get_db)
 ):
     request_data = get_headers(request)
+    token = auth.credentials
     try:
-        jwt_token = JWTService().verify(auth.credentials)
+        jwt_token = JWTService().verify(token)
         user_service = UserService()
+
+        """Check if user is valid"""
         user = user_service.get_profile(jwt_token["email"], db)
 
+        """Check if user is logged in"""
+        user_service.is_logged_in(user.id, token, db)
+
+        """Check if user is active"""
         if not user_service.is_active(user):
             logger.info(log_messages.AUTH_USER_INACTIVE.format(user_id=user.id, status=user.status))
             raise Unauthorized()
-        return UserSession(email=jwt_token["email"])
+
+        return UserSession(
+            id=str(user.id),
+            email=jwt_token["email"],
+            token=token,
+        )
     except Unauthorized as e:
         logger.error("Unauthorized", exc_info=True, extra=request_data)
         raise Unauthorized(str(e))
