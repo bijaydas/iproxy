@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette import status
 
-from app.api.v1 import auth, profile
+from app.api.v1 import auth, profile, upload
 from app.core.logger import LoggingMiddleware
 from app.core.settings import settings
 from app.core.startup import checks
@@ -71,3 +71,4 @@ def validation_exception_handler(request: Request, exception: RequestValidationE
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(profile.router, prefix="/api/profile", tags=["profile"])
+app.include_router(upload.router, prefix="/api/upload", tags=["upload"])

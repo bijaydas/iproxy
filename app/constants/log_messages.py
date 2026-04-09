@@ -34,6 +34,9 @@ SESSION_EXPIRED         = "Session expired | session_id={session_id}"
 SESSION_REVOKED         = "Session revoked | session_id={session_id} user_id={user_id}"
 SESSION_NOT_FOUND       = "Session not found | session_id={session_id}"
 
+# ── Upload ────────────────────────────────────────────────────────────────────
+UPLOAD_FILE_NOT_ALLOWED = "Upload rejected | user_id={user_id} filename={filename} extension={extension}"
+
 # ── Database ──────────────────────────────────────────────────────────────────
 DB_CONNECTED            = "Database connected | host={host}"
 DB_CONNECTION_FAILED    = "Database connection failed | host={host} error={error}"

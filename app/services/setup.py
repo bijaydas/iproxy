@@ -1,7 +1,8 @@
+from pathlib import Path
+
 from sqlalchemy import inspect, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
-from pathlib import Path
 
 from app.core.database import engine
 from app.core.settings import settings

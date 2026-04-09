@@ -93,7 +93,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                     f"Incoming request: {request.method} {request.url}"
                     f"Headers: {dict(request.headers)} Body: {json_request_body}"
                 )
-            except json.JSONDecodeError:
+            except (json.JSONDecodeError, UnicodeDecodeError):
                 # If JSON parsing fails, log as plain text
                 logger.info(
                     f"Incoming request: {request.method} {request.url}"

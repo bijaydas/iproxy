@@ -1140,6 +1140,7 @@ dependencies = [
     { name = "psycopg2-binary" },
     { name = "pyjwt", extra = ["crypto"] },
     { name = "pytest" },
+    { name = "python-multipart" },
 ]
 
 [package.dev-dependencies]
@@ -1156,6 +1157,7 @@ requires-dist = [
     { name = "psycopg2-binary", specifier = ">=2.9.11" },
     { name = "pyjwt", extras = ["crypto"], specifier = ">=2.12.1" },
     { name = "pytest", specifier = ">=9.0.3" },
+    { name = "python-multipart", specifier = ">=0.0.22" },
 ]
 
 [package.metadata.requires-dev]

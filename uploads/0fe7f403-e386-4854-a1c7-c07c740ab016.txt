@@ -1,0 +1,6 @@
+Hello World!
+This is a sample text file.
+It contains some dummy data for testing purposes.
+Name: John Doe
+Age: 30
+City: New York

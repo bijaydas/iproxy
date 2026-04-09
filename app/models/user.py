@@ -9,9 +9,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 from app.enums import UserStatus
 
-
 if TYPE_CHECKING:
-    from app.models import Session as SessionModel, Upload
+    from app.models.session import Session as SessionModel
+    from app.models.upload import Upload
 
 
 class User(Base):
