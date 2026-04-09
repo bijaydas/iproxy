@@ -1,17 +1,16 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+import app.constants.log_messages as log_messages
 from app.core.database import get_db
 from app.core.logger import logger
+from app.deps.auth import get_current_user
 from app.exceptions.auth import EmailAlreadyExists, InvalidPassword, InvalidUser
 from app.exceptions.common import FallbackException
+from app.schemas.general import UserSession
 from app.schemas.requests.auth import LoginRequest, SignUpRequest
 from app.schemas.responses.auth import SignUpResponse, SignUpResponseData
 from app.schemas.responses.common import ApiSuccessDataResponse, ApiSuccessResponse
-from app.services.user import UserService
-import app.constants.log_messages as log_messages
-from app.schemas.general import UserSession
-from app.deps.auth import get_current_user
 from app.services import UserService
 
 router = APIRouter()

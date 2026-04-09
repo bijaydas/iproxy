@@ -2,13 +2,13 @@ from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
+import app.constants.log_messages as log_messages
+from app.core.database import get_db
 from app.core.logger import logger
 from app.exceptions.auth import InvalidToken, Unauthorized
 from app.schemas.general import UserSession
 from app.services import JWTService, UserService
 from app.utils.general import get_headers
-from app.core.database import get_db
-import app.constants.log_messages as log_messages
 
 bearer_schema = HTTPBearer()
 

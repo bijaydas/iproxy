@@ -4,14 +4,13 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.logger import logger
+from app.enums import UserStatus
 from app.exceptions.auth import EmailAlreadyExists, InvalidPassword, InvalidUser
 from app.models import Session as SessionModel
 from app.models import User
 from app.schemas.requests.auth import LoginRequest, SignUpRequest
 from app.services.jwt import JWTService
 from app.services.password import PasswordService
-from app.enums import UserStatus
-from app.utils.general import pprint
 
 
 class UserService:
