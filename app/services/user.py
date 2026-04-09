@@ -8,6 +8,7 @@ from app.models import User
 from app.schemas.requests.auth import LoginRequest, SignUpRequest
 from app.services.jwt import JWTService
 from app.services.password import PasswordService
+from app.enums import UserStatus
 
 
 class UserService:
@@ -73,3 +74,7 @@ class UserService:
             raise InvalidUser()
 
         return user
+
+    @staticmethod
+    def is_active(user: User):
+        return user.status == UserStatus.active.value

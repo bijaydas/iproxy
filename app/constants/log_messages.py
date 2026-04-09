@@ -5,6 +5,7 @@ AUTH_INVALID_TOKEN      = "Invalid token | ip={ip}"
 AUTH_EXPIRED_TOKEN      = "Expired token | ip={ip}"
 AUTH_MISSING_TOKEN      = "Missing token | ip={ip}"
 AUTH_USER_NOT_FOUND     = "Authenticated user not found | sub={sub}"
+AUTH_USER_INACTIVE      = "Inactive user blocked | user_id={user_id} status={status}"
 
 # ── Request ───────────────────────────────────────────────────────────────────
 REQUEST_RECEIVED        = "Request received | method={method} path={path} ip={ip}"
@@ -47,4 +48,3 @@ SERVICE_READY           = "Service ready"
 SERVICE_SHUTTING_DOWN   = "Service shutting down"
 VALIDATION_ERROR        = "Validation error | path={path} detail={detail}"
 RATE_LIMIT_EXCEEDED     = "Rate limit exceeded | ip={ip} path={path}"
-
