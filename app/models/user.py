@@ -9,8 +9,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 from app.enums import UserStatus
 
+
 if TYPE_CHECKING:
-    from app.models.session import Session
+    from app.models import Session as SessionModel, Upload
 
 
 class User(Base):
@@ -31,4 +32,5 @@ class User(Base):
     """This is soft delete"""
     is_deleted: Mapped[int] = mapped_column(Integer, default=0)
 
-    sessions: Mapped[list["Session"]] = relationship("Session", back_populates="user")
+    sessions: Mapped[list["SessionModel"]] = relationship("Session", back_populates="user")
+    uploads: Mapped[list["Upload"]] = relationship("Upload", back_populates="user")

@@ -11,3 +11,5 @@ def checks():
     missing_tables = application_setup.get_missing_tables()
     if missing_tables:
         raise Exception("Tables not migrated: {}".format(missing_tables))
+
+    application_setup.setup_folders()

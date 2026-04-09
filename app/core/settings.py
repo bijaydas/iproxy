@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -23,6 +24,8 @@ class Settings(BaseSettings):
 
     MAX_ACTIVE_SESSIONS_PER_USER: int = 9999999
     CORS_ORIGINS: list[str] = ["*"]
+
+    UPLOAD_FOLDER: str = "uploads"
 
     class Config:
         env_file = ".env"
