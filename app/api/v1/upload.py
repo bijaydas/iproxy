@@ -19,10 +19,21 @@ def upload_job_description(
 ):
     try:
         upload_service = UploadService()
-        upload = upload_service.job_description(file, int(session.id), db)
+        upload_service.job_description(file, int(session.id), db)
+        return ApiSuccessResponse()
+    except Exception as e:
+        logger.error(e)
+        return ApiErrorResponse(error=str(e))
 
-        print(upload)
-
+@router.post("/resume")
+def upload_resume(
+    file: UploadFile = File(...),
+    session: UserSession = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        upload_service = UploadService()
+        upload_service.resume(file, int(session.id), db)
         return ApiSuccessResponse()
     except Exception as e:
         logger.error(e)
