@@ -36,14 +36,18 @@ class ChromaDBService:
         return splitter.split_text(content)
 
     @classmethod
-    def _convert_to_documents(cls, texts: List[str], user_id: str) -> List[Document]:
+    def _convert_to_documents(cls, texts: List[str], user_id: str, source: str, type: str) -> List[Document]:
         documents = []
 
         for text in texts:
             documents.append(
                 Document(
                     page_content=text,
-                    metadata={"user_id": user_id}
+                    metadata={
+                        "user_id": user_id,
+                        "source": source,
+                        "type": type,
+                    }
                 )
             )
 
@@ -70,9 +74,9 @@ class ChromaDBService:
         texts = self._split_text(content)
 
         ids = self._get_ids(texts, user_id)
-        documents = self._convert_to_documents(texts, user_id)
+        documents = self._convert_to_documents(texts, user_id, str(file_path), "resume")
 
-        collection = self.get_collection("resume")
+        collection = self.get_collection(settings.COLLECTION_RESUME)
 
         collection.add_documents(documents, ids=ids)
 
@@ -95,9 +99,9 @@ class ChromaDBService:
         texts = self._split_text(content)
 
         ids = self._get_ids(texts, user_id)
-        documents = self._convert_to_documents(texts, user_id)
+        documents = self._convert_to_documents(texts, user_id, str(file_path), "job_description")
 
-        collection = self.get_collection("job_description")
+        collection = self.get_collection(settings.COLLECTION_JOB_DESCRIPTION)
 
         collection.add_documents(documents, ids=ids)
 

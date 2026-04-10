@@ -22,7 +22,7 @@ def upload_job_description(
         filename = upload_service.job_description(file, int(session.id), db)
 
         chroma_service = ChromaDBService()
-        chroma_service.embedd_resume(filename, session.id)
+        chroma_service.embedd_job_description(filename, session.id)
 
         return ApiSuccessResponse()
     except Exception as e:

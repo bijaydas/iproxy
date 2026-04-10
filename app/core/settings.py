@@ -13,6 +13,8 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str
     CHROMA_DB_PATH: str = "chromadb"
+    COLLECTION_RESUME: str = "c_resume"
+    COLLECTION_JOB_DESCRIPTION: str = "c_job_description"
 
     # JWT settings
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
@@ -23,18 +25,19 @@ class Settings(BaseSettings):
     ENABLE_CONSOLE_LOGGING: bool = False
     ENABLE_FILE_LOGGING: bool = True
 
-    MAX_ACTIVE_SESSIONS_PER_USER: int = 9999999
+    MAX_ACTIVE_SESSIONS_PER_USER: int = 100
     CORS_ORIGINS: list[str] = ["*"]
 
     UPLOAD_FOLDER: str = "uploads"
 
     OPENAI_API_KEY: str
-    EMBEDDING_MODEL: str = "text-embedding-3-small"
+    LLM_MODEL: str
+    EMBEDDING_MODEL: str
 
-    LANGSMITH_ENDPOINT: str = "https://eu.api.smith.langchain.com"
-    LANGSMITH_TRACING: str = "true"
+    LANGSMITH_TRACING: str
+    LANGSMITH_ENDPOINT: str
     LANGSMITH_API_KEY: str
-    LANGSMITH_PROJECT: str = "Interview_Proxy"
+    LANGSMITH_PROJECT: str
 
     class Config:
         env_file = ".env"
