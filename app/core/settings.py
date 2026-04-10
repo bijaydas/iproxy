@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     DATABASE_URL: str
+    CHROMA_DB_PATH: str = "chromadb"
 
     # JWT settings
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
@@ -26,6 +27,14 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list[str] = ["*"]
 
     UPLOAD_FOLDER: str = "uploads"
+
+    OPENAI_API_KEY: str
+    EMBEDDING_MODEL: str = "text-embedding-3-small"
+
+    LANGSMITH_ENDPOINT: str = "https://eu.api.smith.langchain.com"
+    LANGSMITH_TRACING: str = "true"
+    LANGSMITH_API_KEY: str
+    LANGSMITH_PROJECT: str = "Interview_Proxy"
 
     class Config:
         env_file = ".env"
