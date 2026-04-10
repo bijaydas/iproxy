@@ -19,7 +19,11 @@ def upload_job_description(
 ):
     try:
         upload_service = UploadService()
-        upload_service.job_description(file, int(session.id), db)
+        filename = upload_service.job_description(file, int(session.id), db)
+
+        chroma_service = ChromaDBService()
+        chroma_service.embedd_resume(filename, session.id)
+
         return ApiSuccessResponse()
     except Exception as e:
         logger.error(e)

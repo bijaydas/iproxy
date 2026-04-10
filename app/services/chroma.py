@@ -77,3 +77,28 @@ class ChromaDBService:
         collection.add_documents(documents, ids=ids)
 
         return True
+
+    def embedd_job_description(self, job_description_path: str, user_id: str):
+        file_path = Path(job_description_path)
+
+        if not file_path.exists():
+            logger.error(f"job_description_path file {job_description_path} does not exist")
+            raise FileNotFoundError(f"job_description_path file not found: {job_description_path}")
+
+        with open(file_path, "r", encoding="utf8") as f:
+            content = f.read()
+
+            if len(content) < 100:
+                logger.error(f"job_description_path file {job_description_path} is too short")
+                raise Exception("job_description_path file too short")
+
+        texts = self._split_text(content)
+
+        ids = self._get_ids(texts, user_id)
+        documents = self._convert_to_documents(texts, user_id)
+
+        collection = self.get_collection("job_description")
+
+        collection.add_documents(documents, ids=ids)
+
+        return True
