@@ -16,7 +16,6 @@ dependencies = [
     "langchain-chroma>=0.1.2",
     "langchain-openai>=1.1.12",
     "langchain-text-splitters>=1.1.1",
-    "langsmith>=0.7.30",
     "psycopg2-binary>=2.9.11",
     "pyjwt[crypto]>=2.12.1",
     "pytest>=9.0.3",

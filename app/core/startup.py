@@ -1,5 +1,7 @@
+import os
 from app.core.database import engine
 from app.services.setup import ApplicationSetup
+from app.core.settings import settings
 
 
 def checks():
@@ -13,3 +15,8 @@ def checks():
         raise Exception("Tables not migrated: {}".format(missing_tables))
 
     application_setup.setup_folders()
+
+    os.environ["LANGSMITH_TRACING"] = settings.LANGSMITH_TRACING
+    os.environ["LANGSMITH_ENDPOINT"] = settings.LANGSMITH_ENDPOINT
+    os.environ["LANGSMITH_API_KEY"] = settings.LANGSMITH_API_KEY
+    os.environ["LANGSMITH_PROJECT"] = settings.LANGSMITH_PROJECT
