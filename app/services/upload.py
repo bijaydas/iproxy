@@ -13,7 +13,7 @@ from app.models import Upload as UploadModel
 
 class UploadService:
     def __init__(self):
-        self.allowed_extensions = ["txt", "pdf", "md"]
+        self.allowed_extensions = ["txt", "md"]
 
     @classmethod
     def get_uniquer_name(cls, extension: str) -> str:
