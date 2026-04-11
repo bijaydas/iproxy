@@ -87,3 +87,52 @@ Be specific, direct, and actionable. No generic advice.
         result = self.llm.invoke(prompt)
 
         return result.content.strip()
+
+    @require_llm
+    def interview(self, resume_content: str, job_description_content: str, question: str):
+        prompt_template = PromptTemplate.from_template("""
+You are acting as a candidate in a job interview.
+You will answer the interviewer's questions based STRICTLY on the resume and job description provided below.
+
+---
+
+## Candidate Resume
+{resume_content}
+
+---
+
+## Job Description
+{job_description_content}
+
+---
+
+## Rules
+- Answer ONLY based on the resume and job description above.
+- Answer in first person, as if YOU are the candidate.
+- Keep answers concise, confident, and professional.
+- If the question is a common interview question (e.g. "tell me about yourself", "your strengths/weaknesses"),
+answer based on the resume data.
+- If the question CANNOT be answered from the resume or JD context, respond as human would answer. Your answer should
+not sound robotic.
+- Do NOT make up experience, skills, or facts not present in the resume.
+- Do NOT break character.
+
+---
+
+## Interviewer Question
+{question}
+
+---
+
+## Your Answer
+            """)
+
+        prompt = prompt_template.format(
+            job_description_content=job_description_content,
+            resume_content=resume_content,
+            question=question
+        )
+
+        result = self.llm.invoke(prompt)
+
+        return result.content.strip()
