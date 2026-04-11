@@ -1,7 +1,7 @@
 [project]
-name = "tapi"
+name = "interview-helper"
 version = "0.1.0"
-description = "A minimal FastAPI template for building modern APIs quickly"
+description = "A FastAPI backend that helps candidates prepare for job interviews using AI"
 authors = [
     { name = "bijaydas", email = "me@bijaydas.com" }
 ]

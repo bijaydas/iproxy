@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    APP_NAME: str = "FastAPI Application"
+    APP_NAME: str = "Interview Helper"
     HOST: str = "localhost"
     PORT: int = 8000
 
