@@ -39,6 +39,8 @@ class Settings(BaseSettings):
     LANGSMITH_API_KEY: str
     LANGSMITH_PROJECT: str
 
+    ENABLE_LLM_CALLS: bool = True
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

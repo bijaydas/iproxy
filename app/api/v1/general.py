@@ -1,16 +1,17 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.logger import logger
+from app.core import logger, settings
 from app.deps.auth import get_current_user
-from app.schemas.responses.common import ApiErrorResponse, ApiSuccessDataResponse, ApiSuccessResponse
-from app.services import ChromaDBService, LLMService
+from app.exceptions.common import FallbackException
 from app.schemas.requests.general import SearchRequest
+from app.schemas.responses.common import ApiSuccessDataResponse, ApiSuccessResponse
+from app.services import ChromaDBService, LLMService
 
 router = APIRouter()
 
-@router.post("/search")
-async def search(
+@router.post("/ask")
+async def ask(
     payload: SearchRequest,
     user_session: Session = Depends(get_current_user),
 ):
@@ -43,4 +44,41 @@ async def search(
         )
     except Exception as e:
         logger.error(e)
-        return ApiErrorResponse(error=str(e))
+        return FallbackException(error=str(e))
+
+@router.get("/improvements")
+async def improvements(
+    user_session: Session = Depends(get_current_user),
+):
+    try:
+        llm = LLMService()
+        chroma = ChromaDBService()
+
+        resume_data = chroma.get_collection(settings.COLLECTION_RESUME).get()["documents"]
+        jd_data = chroma.get_collection(settings.COLLECTION_JOB_DESCRIPTION).get()["documents"]
+
+        if len(resume_data) == 0:
+            logger.info("No resume data")
+            raise Exception("There is no resume data")
+
+        if len(jd_data) == 0:
+            logger.info("No jd data")
+            raise Exception("There is no job description data")
+
+        resume_content = "\n\n".join(resume_data)
+        logger.info(f"Resume content: {resume_content}")
+
+        jd_content = "\n\n".join(jd_data)
+        logger.info(f"JD content: {jd_content}")
+
+        llm_response = llm.resume_improvements(resume_content, jd_content)
+        logger.info(f"Resume improvements: {llm_response}")
+
+        return ApiSuccessDataResponse(
+            data={
+                "response": llm_response,
+            }
+        )
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        raise FallbackException(str(e))
