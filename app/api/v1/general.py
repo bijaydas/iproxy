@@ -1,27 +1,38 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core import logger, settings
+from app.core import logger, settings, get_db
 from app.deps.auth import get_current_user
-from app.exceptions.common import FallbackException
+from app.exceptions.common import FallbackException, LLMLimitExceededException
 from app.schemas.requests.general import SearchRequest
 from app.schemas.responses.common import ApiSuccessDataResponse, ApiSuccessResponse
-from app.services import ChromaDBService, LLMService
+from app.services import ChromaDBService, LLMService, UserService
+from app.schemas.general import UserSession
 
 router = APIRouter()
 
 @router.post("/ask")
 async def ask(
     payload: SearchRequest,
-    user_session: Session = Depends(get_current_user),
+    user_session: UserSession = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     query = payload.q
     try:
+        user = UserService()
+
+        if not user.can_make_llm_calls(user_session.id, db):
+            logger.info(f"User {user_session.id} cannot make LLM calls")
+            raise LLMLimitExceededException()
+
         chroma_db = ChromaDBService()
         llm = LLMService()
 
+        """Check if user can make LLM request"""
+
         """Classifying about the query type"""
         collection_type = llm.classify_query_source(query)
+        user.consume_llm_calls(user_session.id, db)
 
         collection = chroma_db.get_collection(collection_type)
 
@@ -34,6 +45,7 @@ async def ask(
             return ApiSuccessResponse()
 
         answer = llm.answer_query(query, document_results)
+        user.consume_llm_calls(user_session.id, db)
 
         logger.info(f"Query: {query} | Type: {collection_type} | Answer: {answer}")
 
@@ -44,13 +56,20 @@ async def ask(
         )
     except Exception as e:
         logger.error(e)
-        return FallbackException(error=str(e))
+        raise FallbackException(error=str(e))
 
 @router.get("/improvements")
 async def improvements(
-    user_session: Session = Depends(get_current_user),
+    user_session: UserSession = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     try:
+        user = UserService()
+
+        if not user.can_make_llm_calls(user_session.id, db):
+            logger.info(f"User {user_session.id} cannot make LLM calls")
+            raise LLMLimitExceededException()
+
         llm = LLMService()
         chroma = ChromaDBService()
 
@@ -73,6 +92,7 @@ async def improvements(
 
         llm_response = llm.resume_improvements(resume_content, jd_content)
         logger.info(f"Resume improvements: {llm_response}")
+        user.consume_llm_calls(user_session.id, db)
 
         return ApiSuccessDataResponse(
             data={
@@ -86,10 +106,17 @@ async def improvements(
 @router.post("/interview")
 async def interview(
     payload: SearchRequest,
-    user_session: Session = Depends(get_current_user),
+    user_session: UserSession = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     query = payload.q
     try:
+        user = UserService()
+
+        if not user.can_make_llm_calls(user_session.id, db):
+            logger.info(f"User {user_session.id} cannot make LLM calls")
+            raise LLMLimitExceededException()
+
         llm = LLMService()
         chroma = ChromaDBService()
 
@@ -111,6 +138,7 @@ async def interview(
         logger.info(f"JD content: {jd_content}")
 
         llm_response = llm.interview(resume_content, jd_content, query)
+        user.consume_llm_calls(user_session.id, db)
         logger.info(f"interview: {llm_response}")
 
         return ApiSuccessDataResponse(

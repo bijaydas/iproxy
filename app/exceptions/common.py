@@ -10,3 +10,11 @@ class BaseAppException(Exception):
 class FallbackException(BaseAppException):
     def __init__(self, error: str = "Fallback", status_code: int = status.HTTP_400_BAD_REQUEST) -> None:
         super().__init__(error, status_code)
+
+class LLMLimitExceededException(BaseAppException):
+    def __init__(
+        self,
+        error: str = "Reach out to me@bijaydas.com to make more request",
+        status_code: int = status.HTTP_400_BAD_REQUEST
+    ):
+        super().__init__(error, status_code)

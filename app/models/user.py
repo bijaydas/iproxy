@@ -23,6 +23,8 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
     password: Mapped[str]
 
+    llm_calls_count: Mapped[int] = mapped_column(Integer, nullable=True, default=3)
+
     """Based upon this status user will be able to log in"""
     status: Mapped[str] = mapped_column(String(30), default=UserStatus.active.value)
 

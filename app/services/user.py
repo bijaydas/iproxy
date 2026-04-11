@@ -143,3 +143,36 @@ class UserService:
         db.refresh(user)
 
         return True
+
+    @classmethod
+    def can_make_llm_calls(cls, user_id: str, db: Session):
+        user = db.query(User).filter(User.id == user_id).first()
+
+        if not user:
+            logger.error(f"User with id {user_id} does not exist")
+            raise InvalidUser()
+
+        if not user.llm_calls_count or user.llm_calls_count == 0:
+            logger.info(f"User with id {user_id} llm_calls_count={user.llm_calls_count}")
+            return False
+        return True
+
+    @classmethod
+    def consume_llm_calls(cls, user_id: str, db: Session, consumed: int = 1):
+        user = db.query(User).filter(User.id == user_id).first()
+
+        if not user:
+            logger.error(f"User with id {user_id} does not exist")
+            raise InvalidUser()
+
+        if not user.llm_calls_count or user.llm_calls_count == 0:
+            logger.error(f"User with id {user_id} llm_calls_count={user.llm_calls_count}")
+            return False
+
+        current_count = user.llm_calls_count
+        user.llm_calls_count -= consumed
+
+        db.commit()
+        db.refresh(user)
+
+        return True

@@ -18,7 +18,9 @@ def get_profile(
     db: Session = Depends(get_db)
 ):
     try:
-        user = UserService.get_profile(
+        service = UserService()
+
+        user = service.get_profile(
             user_session.email,
             db,
         )
