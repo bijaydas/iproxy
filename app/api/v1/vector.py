@@ -1,13 +1,12 @@
 from fastapi import APIRouter, Depends
 
 from app.core import logger
-from app.schemas.general import UserSession
+from app.core.settings import settings
 from app.deps.auth import get_current_user
 from app.exceptions.common import FallbackException
+from app.schemas.general import UserSession
 from app.schemas.responses.common import ApiSuccessDataResponse
 from app.services import ChromaDBService
-from app.core.settings import settings
-
 
 router = APIRouter()
 

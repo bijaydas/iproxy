@@ -170,7 +170,6 @@ class UserService:
             logger.error(f"User with id {user_id} llm_calls_count={user.llm_calls_count}")
             return False
 
-        current_count = user.llm_calls_count
         user.llm_calls_count -= consumed
 
         db.commit()

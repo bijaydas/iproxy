@@ -1,7 +1,8 @@
 import os
+
 from app.core.database import engine
-from app.services.setup import ApplicationSetup
 from app.core.settings import settings
+from app.services.setup import ApplicationSetup
 
 
 def checks():
