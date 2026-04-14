@@ -11,52 +11,6 @@ from app.schemas.general import UserSession
 
 router = APIRouter()
 
-@router.post("/ask")
-async def ask(
-    payload: SearchRequest,
-    user_session: UserSession = Depends(get_current_user),
-    db: Session = Depends(get_db)
-):
-    query = payload.q
-    try:
-        user = UserService()
-
-        if not user.can_make_llm_calls(user_session.id, db):
-            logger.info(f"User {user_session.id} cannot make LLM calls")
-            raise LLMLimitExceededException()
-
-        chroma_db = ChromaDBService()
-        llm = LLMService()
-
-        """Check if user can make LLM request"""
-
-        """Classifying about the query type"""
-        collection_type = llm.classify_query_source(query)
-        user.consume_llm_calls(user_session.id, db)
-
-        collection = chroma_db.get_collection(collection_type)
-
-        document_results = collection.similarity_search(
-            query,
-            k=3,
-        )
-
-        if len(document_results) == 0:
-            return ApiSuccessResponse()
-
-        answer = llm.answer_query(query, document_results)
-        user.consume_llm_calls(user_session.id, db)
-
-        logger.info(f"Query: {query} | Type: {collection_type} | Answer: {answer}")
-
-        return ApiSuccessDataResponse(
-            data={
-                "answer": answer,
-            }
-        )
-    except Exception as e:
-        logger.error(e)
-        raise FallbackException(error=str(e))
 
 @router.get("/improvements")
 async def improvements(

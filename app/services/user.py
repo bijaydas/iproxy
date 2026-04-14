@@ -52,6 +52,7 @@ class UserService:
 
         output = {
             "email": user.email,
+            "id": user.id
         }
 
         jwt_token = self.jwt_service.create_access_token(str(user.id),{"email": user.email})

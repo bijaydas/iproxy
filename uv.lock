@@ -906,6 +906,53 @@ wheels = [
 ]
 
 [[package]]
+name = "interview-helper"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "alembic" },
+    { name = "argon2-cffi" },
+    { name = "chromadb" },
+    { name = "fastapi", extra = ["standard"] },
+    { name = "langchain-chroma" },
+    { name = "langchain-openai" },
+    { name = "langchain-text-splitters" },
+    { name = "psycopg2-binary" },
+    { name = "pyjwt", extra = ["crypto"] },
+    { name = "pytest" },
+    { name = "python-dotenv" },
+    { name = "python-multipart" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "faker" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "alembic", specifier = ">=1.18.4" },
+    { name = "argon2-cffi", specifier = ">=25.1.0" },
+    { name = "chromadb", specifier = ">=1.5.7" },
+    { name = "fastapi", extras = ["standard"], specifier = ">=0.135.0" },
+    { name = "langchain-chroma", specifier = ">=0.1.2" },
+    { name = "langchain-openai", specifier = ">=1.1.12" },
+    { name = "langchain-text-splitters", specifier = ">=1.1.1" },
+    { name = "psycopg2-binary", specifier = ">=2.9.11" },
+    { name = "pyjwt", extras = ["crypto"], specifier = ">=2.12.1" },
+    { name = "pytest", specifier = ">=9.0.3" },
+    { name = "python-dotenv", specifier = ">=1.2.2" },
+    { name = "python-multipart", specifier = ">=0.0.22" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "faker", specifier = ">=40.5.1" },
+    { name = "ruff", specifier = ">=0.15.4" },
+]
+
+[[package]]
 name = "jinja2"
 version = "3.1.6"
 source = { registry = "https://pypi.org/simple" }
@@ -2489,53 +2536,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/83/d3/803453b36afefb7c2bb238361cd4ae6125a569b4db67cd9e79846ba2d68c/sympy-1.14.0.tar.gz", hash = "sha256:d3d3fe8df1e5a0b42f0e7bdf50541697dbe7d23746e894990c030e2b05e72517", size = 7793921, upload-time = "2025-04-27T18:05:01.611Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl", hash = "sha256:e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5", size = 6299353, upload-time = "2025-04-27T18:04:59.103Z" },
-]
-
-[[package]]
-name = "tapi"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "alembic" },
-    { name = "argon2-cffi" },
-    { name = "chromadb" },
-    { name = "fastapi", extra = ["standard"] },
-    { name = "langchain-chroma" },
-    { name = "langchain-openai" },
-    { name = "langchain-text-splitters" },
-    { name = "psycopg2-binary" },
-    { name = "pyjwt", extra = ["crypto"] },
-    { name = "pytest" },
-    { name = "python-dotenv" },
-    { name = "python-multipart" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "faker" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "alembic", specifier = ">=1.18.4" },
-    { name = "argon2-cffi", specifier = ">=25.1.0" },
-    { name = "chromadb", specifier = ">=1.5.7" },
-    { name = "fastapi", extras = ["standard"], specifier = ">=0.135.0" },
-    { name = "langchain-chroma", specifier = ">=0.1.2" },
-    { name = "langchain-openai", specifier = ">=1.1.12" },
-    { name = "langchain-text-splitters", specifier = ">=1.1.1" },
-    { name = "psycopg2-binary", specifier = ">=2.9.11" },
-    { name = "pyjwt", extras = ["crypto"], specifier = ">=2.12.1" },
-    { name = "pytest", specifier = ">=9.0.3" },
-    { name = "python-dotenv", specifier = ">=1.2.2" },
-    { name = "python-multipart", specifier = ">=0.0.22" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "faker", specifier = ">=40.5.1" },
-    { name = "ruff", specifier = ">=0.15.4" },
 ]
 
 [[package]]
