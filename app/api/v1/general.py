@@ -27,8 +27,17 @@ async def improvements(
         llm = LLMService()
         chroma = ChromaDBService()
 
-        resume_data = chroma.get_collection(settings.COLLECTION_RESUME).get()["documents"]
-        jd_data = chroma.get_collection(settings.COLLECTION_JOB_DESCRIPTION).get()["documents"]
+        resume_data = chroma.get_collection(settings.COLLECTION_RESUME).get(
+            where={
+                "user_id": user_session.id
+            }
+        )["documents"]
+
+        jd_data = chroma.get_collection(settings.COLLECTION_JOB_DESCRIPTION).get(
+            where={
+                "user_id": user_session.id
+            }
+        )["documents"]
 
         if len(resume_data) == 0:
             logger.info("No resume data")
@@ -74,8 +83,17 @@ async def interview(
         llm = LLMService()
         chroma = ChromaDBService()
 
-        resume_data = chroma.get_collection(settings.COLLECTION_RESUME).get()["documents"]
-        jd_data = chroma.get_collection(settings.COLLECTION_JOB_DESCRIPTION).get()["documents"]
+        resume_data = chroma.get_collection(settings.COLLECTION_RESUME).get(
+            where={
+                "user_id": user_session.id
+            }
+        )["documents"]
+
+        jd_data = chroma.get_collection(settings.COLLECTION_JOB_DESCRIPTION).get(
+            where={
+                "user_id": user_session.id
+            }
+        )["documents"]
 
         if len(resume_data) == 0:
             logger.info("No resume data")
