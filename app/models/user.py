@@ -10,6 +10,7 @@ from app.core.database import Base
 from app.enums import UserStatus
 
 if TYPE_CHECKING:
+    from app.models.conversation import Conversation
     from app.models.session import Session as SessionModel
     from app.models.upload import Upload
 
@@ -36,3 +37,4 @@ class User(Base):
 
     sessions: Mapped[list["SessionModel"]] = relationship("Session", back_populates="user")
     uploads: Mapped[list["Upload"]] = relationship("Upload", back_populates="user")
+    conversations: Mapped[list["Conversation"]] = relationship("Conversation", back_populates="user")

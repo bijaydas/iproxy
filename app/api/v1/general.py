@@ -8,6 +8,7 @@ from app.schemas.general import UserSession
 from app.schemas.requests.general import SearchRequest
 from app.schemas.responses.common import ApiSuccessDataResponse
 from app.services import ChromaDBService, LLMService, UserService
+from app.services.conversation import ConversationSchema, ConversationService
 
 router = APIRouter()
 
@@ -26,6 +27,7 @@ async def improvements(
 
         llm = LLMService()
         chroma = ChromaDBService()
+        conversation = ConversationService(db)
 
         resume_data = chroma.get_collection(settings.COLLECTION_RESUME).get(
             where={
@@ -57,6 +59,14 @@ async def improvements(
         logger.info(f"Resume improvements: {llm_response}")
         user.consume_llm_calls(user_session.id, db)
 
+        conversation_payload = ConversationSchema(
+            user_id=user_session.id,
+            user_query="improvements",
+            ai_response=llm_response,
+        )
+
+        conversation.create(conversation_payload)
+
         return ApiSuccessDataResponse(
             data={
                 "response": llm_response,
@@ -82,6 +92,7 @@ async def interview(
 
         llm = LLMService()
         chroma = ChromaDBService()
+        conversation = ConversationService(db)
 
         resume_data = chroma.get_collection(settings.COLLECTION_RESUME).get(
             where={
@@ -112,6 +123,14 @@ async def interview(
         llm_response = llm.interview(resume_content, jd_content, query)
         user.consume_llm_calls(user_session.id, db)
         logger.info(f"interview: {llm_response}")
+
+        conversation_payload = ConversationSchema(
+            user_id=user_session.id,
+            user_query=query,
+            ai_response=llm_response,
+        )
+
+        conversation.create(conversation_payload)
 
         return ApiSuccessDataResponse(
             data={
